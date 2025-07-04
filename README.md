@@ -1,2 +1,2 @@
 # blogApp
-react | express
+blog app with React | Express
