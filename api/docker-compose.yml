@@ -1,0 +1,60 @@
+services:
+  blog-db:
+    image: mysql:8.0
+    container_name: blog_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - blog
+
+  blog-api:
+    image: node:24-alpine
+    container_name: blog_api
+    working_dir: /usr/app
+    expose:
+      - ${PORT}
+    command: >
+      sh -c "if [ ! -d node_modules ]; then npm i; fi && npm run dev"
+    volumes:
+      - ./:/usr/app
+    ports:
+      - 5000:5000
+    environment:
+      - PORT=${PORT}
+    depends_on:
+      - blog-db
+    env_file:
+      - .env
+    networks:
+      - blog
+  
+  blog-phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: blog_php_my_admin
+    ports:
+      - 8080:80
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - PMA_HOST=blog-db
+    networks:
+      - blog
+    depends_on:
+      - blog-db
+    env_file:
+      - .env
+
+volumes:
+  mysql_data:
+
+networks:
+  blog:
+    driver: bridge
+
+
