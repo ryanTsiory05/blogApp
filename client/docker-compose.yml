@@ -1,0 +1,21 @@
+services:
+  blog-client:
+    image: node:24-alpine
+    container_name: blog_client
+    working_dir: /usr/app
+    expose:
+      - 3000
+    command: >
+      sh -c "if [ ! -d node_modules ]; then npm i; fi && npm run start"
+    volumes:
+      - ./:/usr/app
+    ports:
+      - 3000:3000
+    networks:
+      - blog
+      
+networks:
+  blog:
+    driver: bridge
+
+
