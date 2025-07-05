@@ -14,7 +14,7 @@ export default function Navbar() {
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-  }, [showModal]); // Refresh after login modal closes
+  }, [showModal]);
 
   const handleLogout = () => {
     logout(); 

@@ -3,7 +3,7 @@ import { Post } from '../types/Post';
 
 export const getAllPosts = async (): Promise<Post[]> => {
   try {
-    const res = await api.get<Post[]>('/post/all');
+    const res = await api.get<Post[]>('/posts/all');
     return res.data;
   } catch (error) {
     if (error instanceof Error) {
@@ -17,18 +17,24 @@ export const getAllPosts = async (): Promise<Post[]> => {
 };
 
 export const getMyPosts = async (): Promise<Post[]> => {
-  const res = await api.get<Post[]>('/post/mine');
+  const res = await api.get<Post[]>('/posts/mine');
+  return res.data;
+};
+
+export const getOnePost = async (id: number): Promise<Post> => {
+  const res = await api.get<Post>(`/posts/${id}`);
   return res.data;
 };
 
 
 export const createPost = (data: { title: string; content: string }) =>
-  api.post('/post', data);
+  api.post('/posts', data);
 
 export const updatePost = (id: number, data: any) =>
-  api.put(`/post/${id}`, data);
+  api.put(`/posts/${id}`, data);
+
 export const deletePost = (id: number) =>
-  api.delete(`/post/${id}`);
+  api.delete(`/posts/${id}`);
 
 
 

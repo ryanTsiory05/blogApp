@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Post } from '../../types/Post';
-import { getAllPosts } from '../../services/postService';
+import { getOnePost } from '../../services/postService';
 
 type Comment = {
   username: string;
@@ -18,12 +18,23 @@ export default function PostDetail() {
   ]);
   const [newCommentText, setNewCommentText] = useState('');
   const [newUsername, setNewUsername] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllPosts().then((posts) => {
-      const found = posts.find((p) => p.id === Number(id));
-      setPost(found || null);
-    });
+    if (!id) return;
+
+    getOnePost(Number(id))
+      .then((post) => {
+        setPost(post);
+        setError('');
+      })
+      .catch((err) => {
+        setError(err.message || 'Error ');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [id]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,7 +49,21 @@ export default function PostDetail() {
     setNewUsername('');
   };
 
-  if (!post) return <div className="container py-5">Loading...</div>;
+  if (loading) {
+    return <div className="text-center text-secondary py-5">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-warning text-center py-5">
+        {error}
+      </div>
+    );
+  }
+
+  if (!post) {
+    return <div className="text-center text-muted py-5">Post introuvable</div>;
+  }
 
   return (
     <div className="container py-5">

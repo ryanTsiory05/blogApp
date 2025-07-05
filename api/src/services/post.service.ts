@@ -20,7 +20,6 @@ export const postService = {
   
   update: async (id: number, postData: Partial<Post>) => {
     await postRepository.update(id, postData);
-    return postRepository.findOneBy({ id });
   },
   
   delete: (id: number) => postRepository.delete(id),

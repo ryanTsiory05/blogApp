@@ -3,6 +3,7 @@ import { getAllPosts } from '../../../services/postService';
 import { Post } from '../../../types/Post';
 import { useNavigate } from 'react-router-dom';
 import './ListPosts.css';
+import PostCard from '../CardPost';
 
 export default function ListPosts() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -73,42 +74,12 @@ export default function ListPosts() {
       ) : (
         <div className="row g-4">
           {filteredPosts.map((post) => (
-            <div key={post.id} className="col-12 col-md-4">
-              <div
-                className="card h-100 shadow-sm border-0 rounded-3 p-3"
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleNavigateToDetail(post.id)}
-              >
-                <div className="card-body">
-                  <h3 className="card-title text-primary text-truncate">{post.title}</h3>
-                  <p className="text-muted mb-2">
-                    by <span className="fw-semibold">{post.author.username}</span> —{' '}
-                    <span>{new Date(post.updated_at).toLocaleDateString()}</span>
-                  </p>
-                  <p className="line-clamp-4 card-text">{post.content}</p>
-
-                  <button
-                    className="btn btn-outline-danger btn-sm mt-3"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleLike(post.id);
-                    }}
-                    style={{ minWidth: '90px' }}
-                  >
-                    ❤️ Like ({likes[post.id] || 0})
-                  </button>
-
-                  <div className="mt-3">
-                    <h6 className="text-muted">💬 Comments (3)</h6>
-                    <ul className="list-unstyled small">
-                      <li>Très intéressant !</li>
-                      <li>Merci pour cet article.</li>
-                      <li>J’attends la suite !</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <PostCard
+              post={post}
+              onClick={() => handleNavigateToDetail(post.id)}
+              onLike={() => handleLike(post.id)}
+              likes={likes[post.id] || 0}
+            />
           ))}
         </div>
       )}
