@@ -13,7 +13,7 @@ export default function AuthModal({ show, onClose }: AuthModalProps) {
   if (!show) return null; 
 
   return (
-    <div className="modal show fade d-block" tabIndex={-1} role="dialog" onClick={onClose}>
+    <div className="modal show fade d-block" tabIndex={-1} role="dialog" onClick={onClose} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div className="modal-dialog modal-dialog-centered" role="document" onClick={e => e.stopPropagation()}>
         <div className="modal-content">
           <div className="modal-header">

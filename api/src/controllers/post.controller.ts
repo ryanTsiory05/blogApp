@@ -7,7 +7,7 @@ import { AuthenticatedRequest } from '../middlewares/authMiddleware';
 export const postController = {
   getAll: async (_: Request, res: Response) => {
     const posts = await postService.findAll();
-    res.json(posts);
+    return res.json(posts);
   },
 
   getOne: async (req: Request, res: Response) => {

@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Post } from '../../types/Post';
-import { getOnePost } from '../../services/postService';
+import { Post } from '../../../types/Post';
+import { getOnePost } from '../../../services/postService';
 
 type Comment = {
   username: string;

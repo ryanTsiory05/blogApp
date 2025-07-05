@@ -3,7 +3,7 @@ import { getAllPosts } from '../../../services/postService';
 import { Post } from '../../../types/Post';
 import { useNavigate } from 'react-router-dom';
 import './ListPosts.css';
-import PostCard from '../CardPost';
+import PostCard from '../item/PostCard';
 
 export default function ListPosts() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -12,6 +12,7 @@ export default function ListPosts() {
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
   const [error, setError] = useState('');
+  const [user, setUser] = useState<{ id: number; username: string } | null>(null);
 
     useEffect(() => {
     getAllPosts()
@@ -29,6 +30,11 @@ export default function ListPosts() {
       .finally(() => {
         setLoading(false);
       });
+  }, []);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
   const handleLike = (postId: number) => {
@@ -75,10 +81,12 @@ export default function ListPosts() {
         <div className="row g-4">
           {filteredPosts.map((post) => (
             <PostCard
+              key={post.id}
               post={post}
               onClick={() => handleNavigateToDetail(post.id)}
               onLike={() => handleLike(post.id)}
               likes={likes[post.id] || 0}
+              showActions={user?.id === post.author.id}
             />
           ))}
         </div>
