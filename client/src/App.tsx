@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-// import Dashboard from './pages/Dashboard';
-import MyPosts from './pages/posts/myPosts/MyPosts';
+import MyPosts from './pages/posts/my-posts/MyPosts';
 import ListPost from './pages/posts/list/ListPosts';
 import PostDetail from './pages/posts/detail/PostDetail';
 import Navbar from './components/layout/NavBar/NavBar';
@@ -13,7 +12,6 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<ListPost />} />
-        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route path="/myposts" element={<MyPosts />} />
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/posts/:id" element={<PostDetail />} />
