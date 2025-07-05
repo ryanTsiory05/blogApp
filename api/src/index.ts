@@ -12,13 +12,13 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:3000', //  React port
+  origin: process.env.URL_CLIENT, //  React port
   credentials: true, 
 }));
 
 app.use(express.json());
 
-app.use('/api/post', postRoutes);
+app.use('/api/posts', postRoutes);
 app.use('/api/auth', authRoutes);
 
 app.use(errorHandler);

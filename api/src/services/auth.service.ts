@@ -5,9 +5,9 @@ import jwt from 'jsonwebtoken';
 const userRepo = AppDataSource.getRepository(User);
 
 export const authService = {
-  register: async (userData: Partial<User>) => {
+  register: (userData: Partial<User>) => {
     const user = userRepo.create(userData);
-    return await userRepo.save(user);
+    return userRepo.save(user);
   },
 
   login: async (email: string, password: string) => {

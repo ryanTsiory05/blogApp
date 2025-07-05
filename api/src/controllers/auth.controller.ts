@@ -11,7 +11,7 @@ export const authController = {
     user.password = req.body.password;
 
     const errors = await validate(user);
-    if (errors.length > 0) res.status(400).json(errors);
+    if (errors.length > 0) return res.status(400).json(errors);
 
     try {
       const saved = await authService.register(user);
@@ -26,7 +26,7 @@ export const authController = {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      res.status(400).json({ message: 'Email and password are required.' });
+      return res.status(400).json({ message: 'Email and password are required.' });
     }
 
     try {
