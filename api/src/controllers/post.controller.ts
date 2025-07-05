@@ -18,11 +18,8 @@ export const postController = {
 
   getMine: async (req: AuthenticatedRequest, res: Response) => {
   const userId = req.user?.id;
-    // const userId = 1;
 
-  if (!userId) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+  if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
   const posts = await postService.findByUserId(userId);
   res.json(posts);
@@ -31,9 +28,8 @@ export const postController = {
 create: async (req: AuthenticatedRequest, res: Response) => {
   const { title, content } = req.body;
 
-  if (!title || !content) {
-    return res.status(400).json({ message: 'Fill out the form.' });
-  }
+  if (!title || !content) return res.status(400).json({ message: 'Fill out the form.' });
+  
 
   const post = new Post();
   post.title = title;

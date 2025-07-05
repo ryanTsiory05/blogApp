@@ -10,17 +10,24 @@ export default function ListPosts() {
   const [likes, setLikes] = useState<{ [postId: number]: number }>({});
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    getAllPosts().then((data) => {
-      setPosts(data);
-      const initialLikes = data.reduce((acc: any, post: Post) => {
-        acc[post.id] = 0;
-        return acc;
-      }, {});
-      setLikes(initialLikes);
-      setLoading(false);
-    });
+    useEffect(() => {
+    getAllPosts()
+      .then((data) => {
+        setPosts(data);
+        const initialLikes = data.reduce((acc: any, post: Post) => {
+          acc[post.id] = 0;
+          return acc;
+        }, {});
+        setLikes(initialLikes);
+      })
+      .catch((err) => {
+        setError(err.message || 'Erreur inconnue');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const handleLike = (postId: number) => {
@@ -57,6 +64,10 @@ export default function ListPosts() {
 
       {loading ? (
         <div className="text-center text-secondary">Loading...</div>
+      ) : error ? ( 
+        <div className="alert alert-warning text-center">
+          {error}
+        </div>
       ) : filteredPosts.length === 0 ? (
         <div className="text-center text-muted">Aucun résultat pour « {query} »</div>
       ) : (
