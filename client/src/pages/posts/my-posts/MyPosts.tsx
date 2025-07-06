@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   createPost,
   updatePost,
-  deletePost,
   getMyPosts,
 } from "../../../services/postService";
 import { Post, PostForm } from "../../../types/Post";
@@ -72,8 +71,7 @@ export default function MyPosts() {
         <button
           className="btn btn-outline-success ms-2"
           onClick={() => {
-            toast.info("You must be logged in to create a post.");
-            setShowAuthModal(true);
+              setShowPostModal(true);
           }}
         >
           New Post

@@ -1,10 +1,12 @@
 import api from "./api";
 import { Post } from "../types/Post";
 
-export const getAllPosts = async (): Promise<Post[]> => {
+export const getAllPosts = async (query = ""): Promise<Post[]> => {
   try {
-    const res = await api.get<Post[]>("/posts/all");
-    return res.data;
+    const response = await api.get<Post[]>("/posts", {
+      params: { query },
+    });
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       console.error(

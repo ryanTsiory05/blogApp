@@ -19,6 +19,7 @@ export default function ListPosts() {
   const [loading, setLoading] = useState(true);
   const [likes, setLikes] = useState<{ [postId: number]: number }>({});
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [user, setUser] = useState<{ id: number; username: string } | null>(
@@ -30,7 +31,7 @@ export default function ListPosts() {
     id: null,
   });
   const loadPosts = () => {
-    getMyPosts().then((data) => {
+    getAllPosts().then((data) => {
       setPosts(data);
       setLoading(false);
     });
@@ -63,6 +64,30 @@ export default function ListPosts() {
   }, []);
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [query]);
+
+  useEffect(() => {
+    setLoading(true);
+    getAllPosts(debouncedQuery)
+      .then((data) => {
+        setPosts(data);
+        const initialLikes = data.reduce((acc: any, post: Post) => {
+          acc[post.id] = 0;
+          return acc;
+        }, {});
+        setLikes(initialLikes);
+      })
+      .catch((err) => {
+        setError(err.message || "Erreur inconnue");
+      })
+      .finally(() => setLoading(false));
+  }, [debouncedQuery]);
+
+  useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
@@ -77,13 +102,6 @@ export default function ListPosts() {
   const handleNavigateToDetail = (postId: number) => {
     navigate(`/posts/${postId}`);
   };
-
-  const filteredPosts = posts.filter(
-    (post) =>
-      post.title.toLowerCase().includes(query.toLowerCase()) ||
-      post.content.toLowerCase().includes(query.toLowerCase()) ||
-      post.author.username.toLowerCase().includes(query.toLowerCase())
-  );
 
   return (
     <div className="container py-5">
@@ -138,13 +156,13 @@ export default function ListPosts() {
         <div className="text-center text-secondary">Loading...</div>
       ) : error ? (
         <div className="alert alert-warning text-center">{error}</div>
-      ) : filteredPosts.length === 0 ? (
+      ) : posts.length === 0 ? (
         <div className="text-center text-muted">
           Aucun résultat pour « {query} »
         </div>
       ) : (
         <div className="row g-4">
-          {filteredPosts.map((post) => (
+          {posts.map((post) => (
             <PostCard
               key={post.id}
               post={post}
