@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { register } from '../../services/authService';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { register } from "../../services/authService";
+import { useNavigate } from "react-router-dom";
 
 type RegisterFormProps = {
   onSuccess: () => void;
@@ -8,29 +8,51 @@ type RegisterFormProps = {
 
 export default function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [form, setForm] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<string[]>([]);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const validateForm = () => {
+    const errorList: string[] = [];
 
-    if (form.password !== form.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
-      return;
+    if (form.username.length < 3) {
+      errorList.push("Username must be at least 3 characters");
     }
 
-    if (form.password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      errorList.push("Invalid email format");
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+    if (!passwordRegex.test(form.password)) {
+      errorList.push(
+        "Password must contain at least 6 characters, including uppercase, lowercase and a number"
+      );
+    }
+
+    if (form.password !== form.confirmPassword) {
+      errorList.push("Passwords do not match");
+    }
+
+    return errorList;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors([]);
+
+    const errorList = validateForm();
+    if (errorList.length > 0) {
+      setErrors(errorList);
       return;
     }
 
@@ -38,21 +60,31 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       await register({
         username: form.username,
         email: form.email,
-        password: form.password
+        password: form.password,
       });
       onSuccess();
-      navigate('/dashboard');
+      navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Échec de l’inscription");
+      setErrors([err.response?.data?.message || "Unsuccessful registration"]);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      {error && <div className="alert alert-danger">{error}</div>}
+      {errors.length > 0 && (
+        <div className="alert alert-danger">
+          <ul className="mb-0">
+            {errors.map((err, index) => (
+              <li key={index}>{err}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="mb-3">
-        <label htmlFor="username" className="form-label">Username</label>
+        <label htmlFor="username" className="form-label">
+          Username
+        </label>
         <input
           type="text"
           name="username"
@@ -65,7 +97,9 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       </div>
 
       <div className="mb-3">
-        <label htmlFor="email" className="form-label">Email</label>
+        <label htmlFor="email" className="form-label">
+          Email
+        </label>
         <input
           type="email"
           name="email"
@@ -78,7 +112,9 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       </div>
 
       <div className="mb-3">
-        <label htmlFor="password" className="form-label">Password</label>
+        <label htmlFor="password" className="form-label">
+          Password
+        </label>
         <input
           type="password"
           name="password"
@@ -91,7 +127,9 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       </div>
 
       <div className="mb-3">
-        <label htmlFor="confirmPassword" className="form-label">Confirm password</label>
+        <label htmlFor="confirmPassword" className="form-label">
+          Confirm Password
+        </label>
         <input
           type="password"
           name="confirmPassword"
@@ -103,7 +141,9 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         />
       </div>
 
-      <button type="submit" className="btn btn-primary w-100">Sign in</button>
+      <button type="submit" className="btn btn-primary w-100">
+        Sign up
+      </button>
     </form>
   );
 }

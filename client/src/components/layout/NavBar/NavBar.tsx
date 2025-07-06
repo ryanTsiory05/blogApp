@@ -72,20 +72,6 @@ export default function Navbar() {
                   </li>
                 </ul>
               )}
-              <button
-                className="btn btn-outline-success"
-                onClick={() => {
-                  if (isLoggedIn) {
-                    setShowPostModal(true);
-                  } else {
-                    toast.info("Vous devez être connecté pour créer un post.");
-                    setShowAuthModal(true);
-                  }
-                  setIsCollapsed(false);
-                }}
-              >
-                New Post
-              </button>
             </div>
 
             <div className="d-flex align-items-center gap-3">
@@ -133,7 +119,7 @@ export default function Navbar() {
             await createPost(data);
             handlePostCreated();
           } catch (e: any) {
-            toast.error(e.message || "Erreur lors de la création du post");
+            toast.error(e.message || "Error");
           }
         }}
       />
