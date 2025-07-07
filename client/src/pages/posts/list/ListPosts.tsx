@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { createPost, getAllPosts } from "../../../services/postService";
-import { Post, PostForm } from "../../../types/Post";
+import { Post } from "../../../types/Post";
 import { useNavigate } from "react-router-dom";
 import PostCard from "../item/PostCard";
 import { toast } from "react-toastify";
 import PostModal from "../form/PostModal";
 import AuthModal from "../../../components/auth/AuthModal";
+import { useAuth } from "../../../providers/AuthProvider";
 
 const POSTS_PER_PAGE = 5;
 
@@ -18,8 +19,8 @@ export default function ListPosts() {
   const [loading, setLoading] = useState(true);
   const [showPostModal, setShowPostModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [user, setUser] = useState<{ id: number; username: string } | null>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     const timeout = setTimeout(() => setDebouncedQuery(query), 400);
@@ -44,13 +45,6 @@ export default function ListPosts() {
   useEffect(() => {
     loadPosts();
   }, [debouncedQuery, page]);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-  }, []);
-
-
 
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
 
@@ -101,7 +95,9 @@ export default function ListPosts() {
       {loading ? (
         <div className="text-center text-secondary">Loading...</div>
       ) : !posts || posts.length === 0 ? (
-        <div className="text-center text-muted">Aucun résultat pour « {query} »</div>
+        <div className="text-center text-muted">
+          Aucun résultat pour « {query} »
+        </div>
       ) : (
         <>
           <div className="row g-4">
@@ -117,18 +113,38 @@ export default function ListPosts() {
           </div>
 
           {/* Pagination */}
-          <nav className="d-flex justify-content-center mt-4" aria-label="Page navigation">
+          <nav
+            className="d-flex justify-content-center mt-4"
+            aria-label="Page navigation"
+          >
             <ul className="pagination">
               <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
-                <button className="page-link" onClick={() => setPage((p) => p - 1)}>&laquo; Prev</button>
+                <button
+                  className="page-link"
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  &laquo; Prev
+                </button>
               </li>
               {Array.from({ length: totalPages }, (_, i) => (
-                <li key={i} className={`page-item ${page === i + 1 ? "active" : ""}`}>
-                  <button className="page-link" onClick={() => setPage(i + 1)}>{i + 1}</button>
+                <li
+                  key={i}
+                  className={`page-item ${page === i + 1 ? "active" : ""}`}
+                >
+                  <button className="page-link" onClick={() => setPage(i + 1)}>
+                    {i + 1}
+                  </button>
                 </li>
               ))}
-              <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
-                <button className="page-link" onClick={() => setPage((p) => p + 1)}>Next &raquo;</button>
+              <li
+                className={`page-item ${page === totalPages ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next &raquo;
+                </button>
               </li>
             </ul>
           </nav>

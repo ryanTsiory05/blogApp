@@ -22,8 +22,6 @@ export default function MyPosts() {
   const [showPostModal, setShowPostModal] = useState(false);
   const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [query, setQuery] = useState("");
-
   const loadPosts = () => {
     getMyPosts().then((data) => {
       setPosts(data);
@@ -60,18 +58,11 @@ export default function MyPosts() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>📝 My posts</h2>
       </div>
-      <div className="mb-4 d-flex">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="🔍 Rechercher un post (titre, contenu ou auteur)..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+      <div className="mb-4 d-flex justify-content-end">
         <button
           className="btn btn-outline-success ms-2"
           onClick={() => {
-              setShowPostModal(true);
+            setShowPostModal(true);
           }}
         >
           New Post
@@ -102,7 +93,7 @@ export default function MyPosts() {
       {loading ? (
         <div className="text-center text-secondary">Loading...</div>
       ) : posts.length === 0 ? (
-        <div className="text-center text-muted fs-5">Tu n'as rien publié.</div>
+        <div className="text-center text-muted fs-5">You do not have posts.</div>
       ) : (
         <div className="row row-cols-1 g-4">
           {posts.map((post) => (
@@ -118,7 +109,6 @@ export default function MyPosts() {
         </div>
       )}
 
-      {/*  Modal form */}
       <PostModal
         show={showPostModal}
         onClose={() => setShowPostModal(false)}

@@ -3,6 +3,7 @@ import { Post, PostForm } from "../../../types/Post";
 import { updatePost, deletePost } from "../../../services/postService";
 import { toast } from "react-toastify";
 import PostModal from "../form/PostModal";
+import "./PostCard.css"
 
 type Props = {
   post: Post;
@@ -10,7 +11,7 @@ type Props = {
   onLike?: () => void;
   likes?: number;
   showActions?: boolean;
-  onSuccess?: () => void; // pour recharger après update
+  onSuccess?: () => void; 
 };
 
 export default function PostCard({
@@ -69,18 +70,6 @@ export default function PostCard({
             <span>{new Date(post.updated_at).toLocaleDateString()}</span>
           </p>
           <p className="card-text">{post.content}</p>
-
-          {onLike && (
-            <button
-              className="btn btn-outline-danger btn-sm mt-3"
-              onClick={(e) => {
-                e.stopPropagation();
-                onLike();
-              }}
-            >
-              ❤️ Like ({likes})
-            </button>
-          )}
 
           {showActions && (
             <div className="d-flex justify-content-end gap-2 mt-3">

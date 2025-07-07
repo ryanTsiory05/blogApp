@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { login } from "../../services/authService";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../providers/AuthProvider";
 
 type LoginFormProps = {
   onSuccess: () => void;
@@ -9,7 +9,7 @@ type LoginFormProps = {
 export default function LoginForm({ onSuccess }: LoginFormProps) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const { login: contextLogin } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -43,9 +43,9 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     }
 
     try {
-      await login(form);
+      const { user, token } = await login(form);
+      contextLogin(user, token);
       onSuccess();
-      navigate("/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed.");
     }

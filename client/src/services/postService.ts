@@ -1,7 +1,6 @@
 import api from "./api";
 import { Post } from "../types/Post";
 
-
 export const getAllPosts = async (
   query = "",
   page = 1,
@@ -22,7 +21,6 @@ export const getAllPosts = async (
     }
   }
 };
-
 
 export const getMyPosts = async (): Promise<Post[]> => {
   const res = await api.get<Post[]>("/posts/mine");
