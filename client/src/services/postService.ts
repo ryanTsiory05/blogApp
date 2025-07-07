@@ -1,28 +1,28 @@
 import api from "./api";
 import { Post } from "../types/Post";
 
-export const getAllPosts = async (query = ""): Promise<Post[]> => {
+
+export const getAllPosts = async (
+  query = "",
+  page = 1,
+  limit = 5
+): Promise<{ data: Post[]; total: number }> => {
   try {
-    const response = await api.get<Post[]>("/posts", {
-      params: { query },
+    const response = await api.get<{ data: Post[]; total: number }>("/posts", {
+      params: { query, page, limit },
     });
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
-      console.error(
-        "Erreur lors de la récupération des posts :",
-        error.message
-      );
-      throw new Error("Le serveur est momentanément indisponible.");
+      console.error("Error retrieving posts :", error.message);
+      throw new Error("The server is temporarily unavailable.");
     } else {
-      console.error(
-        "Erreur inconnue lors de la récupération des posts :",
-        error
-      );
-      throw new Error("Une erreur inconnue est survenue.");
+      console.error("Error retrieving :", error);
+      throw new Error("An unknown error has occurred.");
     }
   }
 };
+
 
 export const getMyPosts = async (): Promise<Post[]> => {
   const res = await api.get<Post[]>("/posts/mine");

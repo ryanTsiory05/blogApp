@@ -5,19 +5,29 @@ import { Post } from '../entities/Post';
 const postRepository = AppDataSource.getRepository(Post);
 
 export const postService = {
-    findAll: async (query?: string) => {
-      const qb = postRepository
-    .createQueryBuilder("post")
-    .leftJoinAndSelect("post.author", "author")
-    .orderBy("post.updated_at", "DESC");
+  findAll: async (
+    query?: string,
+    page = 1,
+    limit = 5
+  ): Promise<{ posts: Post[]; total: number }> => {
+    const qb = postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .orderBy('post.updated_at', 'DESC');
 
-  if (query) {
-    qb.where("LOWER(post.title) LIKE :q", { q: `%${query.toLowerCase()}%` })
-      .orWhere("LOWER(post.content) LIKE :q", { q: `%${query.toLowerCase()}%` })
-      .orWhere("LOWER(author.username) LIKE :q", { q: `%${query.toLowerCase()}%` });
-  }
+    if (query) {
+      const q = `%${query.toLowerCase()}%`;
+      qb.where('LOWER(post.title) LIKE :q', { q })
+        .orWhere('LOWER(post.content) LIKE :q', { q })
+        .orWhere('LOWER(author.username) LIKE :q', { q });
+    }
 
-  return qb.getMany()
+    // Pagination
+    qb.skip((page - 1) * limit).take(limit);
+
+    const [posts, total] = await qb.getManyAndCount();
+
+    return { posts, total };
   },
   
   findOne: (id: number) => postRepository.findOneBy({ id }),
