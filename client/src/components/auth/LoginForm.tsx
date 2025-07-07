@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { login } from "../../services/authService";
 import { useAuth } from "../../providers/AuthProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 type LoginFormProps = {
   onSuccess: () => void;
@@ -10,6 +12,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const { login: contextLogin } = useAuth();
+const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -60,7 +63,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           Email
         </label>
         <input
-          type="email"
+          type="text"
           name="email"
           id="email"
           className="form-control"
@@ -70,20 +73,27 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         />
       </div>
 
-      <div className="mb-3">
-        <label htmlFor="password" className="form-label">
-          Password
-        </label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          className="form-control"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-      </div>
+<div className="mb-3 position-relative">
+  <label htmlFor="password" className="form-label">
+    Password
+  </label>
+  <input
+    type={showPassword ? "text" : "password"}
+    name="password"
+    id="password"
+    className="form-control"
+    value={form.password}
+    onChange={handleChange}
+    required
+  />
+  <span
+    className="position-absolute top-50 end-0 translate-middle-y me-3 mt-3"
+    onClick={() => setShowPassword((prev) => !prev)}
+    style={{ cursor: "pointer" }}
+  >
+    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+  </span>
+</div>
 
       <button type="submit" className="btn btn-primary w-100">
         Log in
