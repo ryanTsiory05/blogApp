@@ -1,10 +1,10 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import MyPosts from './pages/posts/my-posts/MyPosts';
-import ListPost from './pages/posts/list/ListPosts';
-import PostDetail from './pages/posts/detail/PostDetail';
-import Navbar from './components/layout/NavBar/NavBar';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Routes, Route, Navigate } from "react-router-dom";
+import MyPosts from "./pages/posts/my-posts/MyPosts";
+import ListPost from "./pages/posts/list/ListPosts";
+import PostDetail from "./pages/posts/detail/PostDetail";
+import Navbar from "./components/layout/NavBar/NavBar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
