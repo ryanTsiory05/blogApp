@@ -4,6 +4,8 @@ import { updatePost, deletePost } from "../../../services/postService";
 import { toast } from "react-toastify";
 import PostModal from "../form/PostModal";
 import "./PostCard.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faTrash } from "../../../icons/icons";
 
 type Props = {
   post: Post;
@@ -85,7 +87,7 @@ export default function PostCard({
                   setShowPostModal(true);
                 }}
               >
-                ✏️ Modify
+                <FontAwesomeIcon icon={faPen} />  Modify
               </button>
               <button
                 className="btn btn-outline-danger btn-sm"
@@ -94,7 +96,7 @@ export default function PostCard({
                   setPostToDelete(post);
                 }}
               >
-                🗑️ Delete
+                <FontAwesomeIcon icon={faTrash} />  Delete
               </button>
             </div>
           )}
@@ -137,7 +139,7 @@ export default function PostCard({
                   Cancel
                 </button>
                 <button className="btn btn-danger" onClick={confirmDelete}>
-                  🗑️ Delete
+                  <FontAwesomeIcon icon={faTrash} />  Delete
                 </button>
               </div>
             </div>

@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import PostModal from "../form/PostModal";
 import AuthModal from "../../../components/auth/AuthModal";
 import { useAuth } from "../../../providers/AuthProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faNewspaper } from "@fortawesome/free-solid-svg-icons";
 
 const POSTS_PER_PAGE = 5;
 
@@ -50,7 +52,10 @@ export default function ListPosts() {
 
   return (
     <div className="container py-5">
-      <h2 className="text-center mb-4 display-5">📰 All posts</h2>
+      <h2 className="text-center mb-4 display-5">
+        <FontAwesomeIcon icon={faNewspaper} className="me-2 text-primary" />
+        All Posts
+      </h2>
 
       <div className="mb-4 d-flex">
         <input
