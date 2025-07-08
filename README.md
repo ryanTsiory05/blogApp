@@ -1,2 +1,24 @@
 # blogApp
-react | express
+
+- **CLIENT** : React (TypeScript), Bootstrap, FontAwesome, React Router, React Toastify  
+- **API** : Node.js, Express.js, TypeScript  
+- **DATABASE** : MySQL via TypeORM  
+
+# installation and running 
+### Required
+
+- Node.js (>=14)
+- Docker Compose (for MySQL)
+- npm or yarn
+
+. **Cloner le dépôt**  
+https://github.com/ryanTsiory05/blogApp.git
+
+- cd client
+  docker-compose up -d
+
+- cd /api
+  docker-compose up -d
+
+
+# Bootstrap and FontAwesome: Streamlines responsive UI design and iconography for a polished and accessible user interface.
