@@ -71,7 +71,7 @@ export default function PostCard({
             by <span className="fw-semibold">{post.author.username}</span> —{" "}
             <span>{new Date(post.updated_at).toLocaleDateString()}</span>
           </p>
-          <p className="card-text">{post.content}</p>
+          <p className="card-text  line-clamp-5">{post.content}</p>
 
           {showActions && (
             <div className="d-flex justify-content-end gap-2 mt-3">

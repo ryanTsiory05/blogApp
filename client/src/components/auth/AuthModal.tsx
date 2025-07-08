@@ -10,6 +10,11 @@ type AuthModalProps = {
 export default function AuthModal({ show, onClose }: AuthModalProps) {
   const [isLoginMode, setIsLoginMode] = useState(true);
 
+  const handleClose = () => {
+    setIsLoginMode(true);
+    onClose();
+  };
+
   if (!show) return null;
 
   return (
@@ -17,7 +22,7 @@ export default function AuthModal({ show, onClose }: AuthModalProps) {
       className="modal show fade d-block"
       tabIndex={-1}
       role="dialog"
-      onClick={onClose}
+      onClick={handleClose}
       style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
     >
       <div
@@ -40,9 +45,9 @@ export default function AuthModal({ show, onClose }: AuthModalProps) {
 
           <div className="modal-body">
             {isLoginMode ? (
-              <LoginForm onSuccess={onClose} />
+              <LoginForm onSuccess={handleClose} />
             ) : (
-              <RegisterForm onSuccess={onClose} />
+              <RegisterForm onSuccess={handleClose} />
             )}
           </div>
 
