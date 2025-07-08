@@ -1,16 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthModal from "../../auth/AuthModal";
 import PostModal from "../../../pages/posts/form/PostModal";
-import { logout } from "../../../services/authService";
 import { toast } from "react-toastify";
 import { createPost } from "../../../services/postService";
 import { PostForm } from "../../../types/Post";
+import { useAuth } from "../../../providers/AuthProvider";
 
 export default function Navbar() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
-  const [user, setUser] = useState<{ username: string } | null>(null);
   const [form, setForm] = useState<PostForm & { id: number | null }>({
     title: "",
     content: "",
@@ -18,20 +17,13 @@ export default function Navbar() {
   });
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-  }, []);
+  const { user, isLoggedIn, logout } = useAuth();
 
   const handleLogout = () => {
     logout();
-    setUser(null);
     navigate("/");
     toast.success("Logout successful.");
   };
-
-  const isLoggedIn = !!localStorage.getItem("token");
 
   const handlePostCreated = () => {
     setShowPostModal(false);
@@ -75,11 +67,11 @@ export default function Navbar() {
             </div>
 
             <div className="d-flex align-items-center gap-3">
-              {isLoggedIn && user ? (
+              {isLoggedIn ? (
                 <>
-                  <span className="text-white">Welcome, {user.username}</span>
+                  <span className="text-white">Welcome, {user?.username}</span>
                   <button
-                    className="btn btn-outline-light "
+                    className="btn btn-outline-light"
                     onClick={() => {
                       handleLogout();
                       setIsCollapsed(false);
@@ -104,7 +96,6 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Modals */}
       <AuthModal show={showAuthModal} onClose={() => setShowAuthModal(false)} />
       <PostModal
         show={showPostModal}

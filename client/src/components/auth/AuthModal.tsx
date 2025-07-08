@@ -28,7 +28,7 @@ export default function AuthModal({ show, onClose }: AuthModalProps) {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">
-              {isLoginMode ? "Connexion" : "Inscription"}
+              {isLoginMode ? "Log in" : "Register"}
             </h5>
             <button
               type="button"

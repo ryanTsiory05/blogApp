@@ -5,11 +5,15 @@ import { postService } from "../services/post.service";
 import { AuthenticatedRequest } from "../middlewares/authMiddleware";
 
 export const postController = {
-getAll: async (req: Request, res: Response) => {
-  const query = req.query.query?.toString();
-  const posts = await postService.findAll(query);
-  return res.json(posts);
-},
+  getAll: async (req: Request, res: Response) => {
+    const query = req.query.query?.toString() || '';
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+
+    const { posts, total } = await postService.findAll(query, page, limit);
+
+    res.json({ data: posts, total });
+  },
 
   getOne: async (req: Request, res: Response) => {
     const post = await postService.findOne(Number(req.params.id));

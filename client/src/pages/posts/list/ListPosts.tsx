@@ -1,127 +1,75 @@
 import { useEffect, useState } from "react";
-import {
-  createPost,
-  getAllPosts,
-  getMyPosts,
-} from "../../../services/postService";
-import { Post, PostForm } from "../../../types/Post";
+import { createPost, getAllPosts } from "../../../services/postService";
+import { Post } from "../../../types/Post";
 import { useNavigate } from "react-router-dom";
-import "./ListPosts.css";
 import PostCard from "../item/PostCard";
 import { toast } from "react-toastify";
 import PostModal from "../form/PostModal";
 import AuthModal from "../../../components/auth/AuthModal";
+import { useAuth } from "../../../providers/AuthProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faNewspaper } from "@fortawesome/free-solid-svg-icons";
+
+const POSTS_PER_PAGE = 5;
 
 export default function ListPosts() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [showPostModal, setShowPostModal] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [likes, setLikes] = useState<{ [postId: number]: number }>({});
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState(query);
+  const [loading, setLoading] = useState(true);
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const navigate = useNavigate();
-  const [error, setError] = useState("");
-  const [user, setUser] = useState<{ id: number; username: string } | null>(
-    null
-  );
-  const [form, setForm] = useState<PostForm & { id: number | null }>({
-    title: "",
-    content: "",
-    id: null,
-  });
-  const loadPosts = () => {
-    getAllPosts().then((data) => {
-      setPosts(data);
-      setLoading(false);
-    });
-  };
-
-  const isLoggedIn = !!localStorage.getItem("token");
-  const handlePostCreated = () => {
-    setShowPostModal(false);
-    setForm({ title: "", content: "", id: null });
-    toast.success("Post created successfully.");
-    loadPosts();
-  };
+  const { user } = useAuth();
 
   useEffect(() => {
-    getAllPosts()
-      .then((data) => {
-        setPosts(data);
-        const initialLikes = data.reduce((acc: any, post: Post) => {
-          acc[post.id] = 0;
-          return acc;
-        }, {});
-        setLikes(initialLikes);
-      })
-      .catch((err) => {
-        setError(err.message || "Erreur inconnue");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 400);
+    const timeout = setTimeout(() => setDebouncedQuery(query), 400);
     return () => clearTimeout(timeout);
   }, [query]);
 
-  useEffect(() => {
+  const loadPosts = () => {
     setLoading(true);
-    getAllPosts(debouncedQuery)
-      .then((data) => {
+    getAllPosts(debouncedQuery, page, POSTS_PER_PAGE)
+      .then(({ data, total }) => {
         setPosts(data);
-        const initialLikes = data.reduce((acc: any, post: Post) => {
-          acc[post.id] = 0;
-          return acc;
-        }, {});
-        setLikes(initialLikes);
+        setTotal(total);
       })
-      .catch((err) => {
-        setError(err.message || "Erreur inconnue");
-      })
+      .catch((e) => toast.error(e.message || "Erreur inconnue"))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    setPage(1);
   }, [debouncedQuery]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-  }, []);
+    loadPosts();
+  }, [debouncedQuery, page]);
 
-  const handleLike = (postId: number) => {
-    setLikes((prev) => ({
-      ...prev,
-      [postId]: prev[postId] + 1,
-    }));
-  };
-
-  const handleNavigateToDetail = (postId: number) => {
-    navigate(`/posts/${postId}`);
-  };
+  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
 
   return (
     <div className="container py-5">
-      <h2 className="text-center mb-4 display-5">📰 All posts</h2>
+      <h2 className="text-center mb-4 display-5">
+        <FontAwesomeIcon icon={faNewspaper} className="me-2 text-primary" />
+        All Posts
+      </h2>
 
-      {/* research */}
       <div className="mb-4 d-flex">
         <input
           type="text"
           className="form-control"
-          placeholder="🔍 Rechercher un post (titre, contenu ou auteur)..."
+          placeholder="🔍 Rechercher un post..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <button
           className="btn btn-outline-success ms-2"
           onClick={() => {
-            if (isLoggedIn) {
-              setShowPostModal(true);
-            } else {
+            if (localStorage.getItem("token")) setShowPostModal(true);
+            else {
               toast.info("You must be logged in to create a post.");
               setShowAuthModal(true);
             }
@@ -129,51 +77,83 @@ export default function ListPosts() {
         >
           New Post
         </button>
-        <AuthModal
-          show={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-        />
-        <PostModal
-          show={showPostModal}
-          onClose={() => {
-            setShowPostModal(false);
-            setForm({ title: "", content: "", id: null });
-          }}
-          form={form}
-          setForm={setForm}
-          onSubmit={async (data) => {
-            try {
-              await createPost(data);
-              handlePostCreated();
-            } catch (e: any) {
-              toast.error(e.message || "Error");
-            }
-          }}
-        />
       </div>
+
+      <AuthModal show={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <PostModal
+        show={showPostModal}
+        onClose={() => setShowPostModal(false)}
+        form={{ title: "", content: "", id: null }}
+        setForm={() => {}}
+        onSubmit={async (data) => {
+          try {
+            await createPost(data);
+            toast.success("Post created successfully");
+            setShowPostModal(false);
+            loadPosts();
+          } catch (e: any) {
+            toast.error(e.message || "Error");
+          }
+        }}
+      />
 
       {loading ? (
         <div className="text-center text-secondary">Loading...</div>
-      ) : error ? (
-        <div className="alert alert-warning text-center">{error}</div>
-      ) : posts.length === 0 ? (
+      ) : !posts || posts.length === 0 ? (
         <div className="text-center text-muted">
           Aucun résultat pour « {query} »
         </div>
       ) : (
-        <div className="row g-4">
-          {posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onClick={() => handleNavigateToDetail(post.id)}
-              onLike={() => handleLike(post.id)}
-              likes={likes[post.id] || 0}
-              showActions={user?.id === post.author.id}
-              onSuccess={loadPosts}
-            />
-          ))}
-        </div>
+        <>
+          <div className="row g-4">
+            {posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onClick={() => navigate(`/posts/${post.id}`)}
+                showActions={user?.id === post.author.id}
+                onSuccess={loadPosts}
+              />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          <nav
+            className="d-flex justify-content-center mt-4"
+            aria-label="Page navigation"
+          >
+            <ul className="pagination">
+              <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  &laquo; Prev
+                </button>
+              </li>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <li
+                  key={i}
+                  className={`page-item ${page === i + 1 ? "active" : ""}`}
+                >
+                  <button className="page-link" onClick={() => setPage(i + 1)}>
+                    {i + 1}
+                  </button>
+                </li>
+              ))}
+              <li
+                className={`page-item ${page === totalPages ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next &raquo;
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </>
       )}
     </div>
   );

@@ -58,7 +58,7 @@ export default function PostDetail() {
   }
 
   if (!post) {
-    return <div className="text-center text-muted py-5">Post introuvable</div>;
+    return <div className="text-center text-muted py-5">Post not found</div>;
   }
 
   return (

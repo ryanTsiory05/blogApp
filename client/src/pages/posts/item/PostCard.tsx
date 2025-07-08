@@ -3,6 +3,9 @@ import { Post, PostForm } from "../../../types/Post";
 import { updatePost, deletePost } from "../../../services/postService";
 import { toast } from "react-toastify";
 import PostModal from "../form/PostModal";
+import "./PostCard.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faTrash } from "../../../icons/icons";
 
 type Props = {
   post: Post;
@@ -10,7 +13,7 @@ type Props = {
   onLike?: () => void;
   likes?: number;
   showActions?: boolean;
-  onSuccess?: () => void; // pour recharger après update
+  onSuccess?: () => void; 
 };
 
 export default function PostCard({
@@ -70,18 +73,6 @@ export default function PostCard({
           </p>
           <p className="card-text">{post.content}</p>
 
-          {onLike && (
-            <button
-              className="btn btn-outline-danger btn-sm mt-3"
-              onClick={(e) => {
-                e.stopPropagation();
-                onLike();
-              }}
-            >
-              ❤️ Like ({likes})
-            </button>
-          )}
-
           {showActions && (
             <div className="d-flex justify-content-end gap-2 mt-3">
               <button
@@ -96,7 +87,7 @@ export default function PostCard({
                   setShowPostModal(true);
                 }}
               >
-                ✏️ Modify
+                <FontAwesomeIcon icon={faPen} />  Modify
               </button>
               <button
                 className="btn btn-outline-danger btn-sm"
@@ -105,7 +96,7 @@ export default function PostCard({
                   setPostToDelete(post);
                 }}
               >
-                🗑️ Delete
+                <FontAwesomeIcon icon={faTrash} />  Delete
               </button>
             </div>
           )}
@@ -148,7 +139,7 @@ export default function PostCard({
                   Cancel
                 </button>
                 <button className="btn btn-danger" onClick={confirmDelete}>
-                  🗑️ Delete
+                  <FontAwesomeIcon icon={faTrash} />  Delete
                 </button>
               </div>
             </div>

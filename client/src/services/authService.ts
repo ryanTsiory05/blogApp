@@ -11,8 +11,6 @@ type LoginResponse = {
 
 export const login = async (data: { email: string; password: string }) => {
   const res = await api.post<LoginResponse>("/auth/login", data);
-  localStorage.setItem("token", res.data.token);
-  localStorage.setItem("user", JSON.stringify(res.data.user));
   return res.data;
 };
 export const register = (data: {
@@ -21,7 +19,7 @@ export const register = (data: {
   password: string;
 }) => api.post("/auth/register", data);
 
-export const logout = () => {
+export const clearAuthStorage = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
 };
